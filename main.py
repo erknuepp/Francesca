@@ -1,11 +1,13 @@
 from html.parser import HTMLParser
 from time import sleep
+
 import urllib.request as request
 from bs4 import BeautifulSoup
 import os
 
 ITEM_SELECTOR = ".s-item__wrapper"
-BID_COUNT_SELECTOR = ".s-item__bidCount"
+ITEM_BID_COUNT_SELECTOR = ".s-item__bidCount"
+ITEM_LINK_SELECTOR = ".s-item__link"
 DEFAULT_RESULTS_PER_PAGE = 60
 
 #Find the number of pages in results
@@ -16,6 +18,9 @@ result = request.urlopen(search_page)
 soup = BeautifulSoup(result, features="lxml")
 search_result_count = int(soup.find("h1", {"class": "srp-controls__count-heading"}).find("span").text)
 maxPageIndex = int(search_result_count/DEFAULT_RESULTS_PER_PAGE)
+
+if maxPageIndex > 10:
+    maxPageIndex = 10
 
 #Create all page files
 for i in range(maxPageIndex):
@@ -34,5 +39,7 @@ for root, dirs, files in os.walk("./"):
         if file.endswith('.htm'):
             with open(file, encoding="utf-8") as fp:
                 soup = BeautifulSoup(fp, features="lxml")
-                for i in soup.select(BID_COUNT_SELECTOR):
-                    print(i.text)
+                for i in soup.select(ITEM_SELECTOR):
+                    print(i.find("a").get_attribute_list("href"))
+                    if i.select_one(ITEM_BID_COUNT_SELECTOR) is not None:
+                        print(i.select_one(ITEM_BID_COUNT_SELECTOR).text)
