@@ -39,4 +39,4 @@ for file in os.listdir():
             for i in soup.select(ITEM_WRAPPER_SELECTOR):
                 print(i.find("a").get_attribute_list("href")[0])
                 if i.select_one(ITEM_BID_COUNT_SELECTOR) is not None:
-                    print(i.select_one(ITEM_BID_COUNT_SELECTOR).text)
+                    print(i.select_one(ITEM_BID_COUNT_SELECTOR).text.strip())
